@@ -1,0 +1,9 @@
+.left-justify{
+    width: 150px;
+    text-align: left;
+}
+
+.right-justify{
+    width: 150px;
+    text-align: right;
+}

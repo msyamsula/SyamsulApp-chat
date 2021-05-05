@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { socket } from "../connection/socket.js";
 import * as actions from "../actions/index.js";
 import Friends from "./Friends.js";
+import "./Chat.css"
 
 class Chat extends Component {
   constructor(props) {
@@ -12,10 +13,12 @@ class Chat extends Component {
     };
   }
 
-  appendChatBox = (text) => {
+  appendChatBox = (owner, text) => {
     let node = document.createElement("div");
     let textNode = document.createTextNode(text);
     node.appendChild(textNode);
+    node.className = owner
+    node.className += (owner === this.props.user.username) ? " right-justify" : " left-justify"
     document.getElementById("chatBox").appendChild(node);
   };
 
@@ -24,13 +27,17 @@ class Chat extends Component {
     } else {
       socket.emit("init", this.props.room);
       socket.once("initReply", (data) => {
-        console.log(data);
         data.forEach((d) => {
-          this.appendChatBox(d.text);
+          this.appendChatBox(d.owner, d.text);
         });
       });
       socket.on(this.props.room, async (msg) => {
-        this.appendChatBox(msg);
+        // msg = {
+        //   owner,
+        //   text,
+        //   room
+        // }
+        this.appendChatBox(msg.owner, msg.text);
       });
     }
   };
@@ -45,10 +52,11 @@ class Chat extends Component {
   send = async (e) => {
     e.preventDefault();
     const msg = {
+      owner: this.props.user.username,
       room: this.props.room,
       text: this.state.myMessage
     };
-    this.appendChatBox(this.state.myMessage);
+    this.appendChatBox(msg.owner, msg.text);
     socket.emit("messaging", msg);
     await this.setState({
       myMessage: "",

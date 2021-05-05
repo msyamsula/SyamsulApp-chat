@@ -1,12 +1,17 @@
 import { db } from "../connections/mongo.js";
 import { createChatItem } from "../models/chat.js";
 
-
+// data = {
+//   owner,
+//   text,
+//   room
+// }
 export const saveChatItem = async (data) => {
-  const chatItem = createChatItem(data.text, data.room)
+  const chatItem = createChatItem(data.owner, data.text, data.room)
   const room = chatItem.room;
   const collection = db.collection(room);
   const item = {
+    owner: chatItem.owner,
     text: chatItem.text,
     createdAt: chatItem.createdAt,
   };
@@ -23,7 +28,12 @@ export const getChatHistory = async (room) => {
     result.push(e)
   })
 
-  // console.log(result);
+  // result = {
+  //   owner,
+  //   text,
+  //   room,
+  //   date
+  // }
   return result;
 }
 

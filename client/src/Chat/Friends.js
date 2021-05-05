@@ -15,15 +15,23 @@ class Friends extends Component {
     const room = `${order[0]}-${order[1]}`;
     element.onclick = (e) => {
       e.preventDefault();
-      console.log(e.target.id);
       this.props.setRoom(e.target.id);
-      window.location.reload()
+      window.location.reload();
     };
     element.id = room;
     document.getElementById("friendBox").appendChild(element);
   };
 
   componentDidMount = async () => {
+    let element = document.createElement("button");
+    let text = document.createTextNode("global");
+    element.appendChild(text);
+    element.onclick = (e) => {
+      e.preventDefault();
+      this.props.setRoom("global");
+      window.location.reload()
+    };
+    document.getElementById("friendBox").appendChild(element)
     if (this.props.user === null) {
     } else {
       const token = createToken(this.props.user);

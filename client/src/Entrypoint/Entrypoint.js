@@ -8,7 +8,6 @@ class App extends Component {
 
   componentDidMount = async () => {
     const token = getTokenFromURL(window.location.href)
-    console.log(token);
     if (token === undefined){
         
     } else {

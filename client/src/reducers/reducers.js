@@ -9,7 +9,7 @@ export const userReducer = (state = null, action) => {
   }
 };
 
-export const roomReducer = (state = null, action) => {
+export const roomReducer = (state = "global", action) => {
   switch (action.type) {
     case SET_ROOM:
       return action.payload;

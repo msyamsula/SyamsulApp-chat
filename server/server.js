@@ -21,9 +21,14 @@ io.on("connection", (socket) => {
     socket.emit("initReply", chatHistory)
   })
 
+  // msg = {
+  //   owner,
+  //   text,
+  //   room
+  // }
   socket.on("messaging", async (msg) => {
     await saveChatItem(msg)
-    socket.broadcast.emit(msg.room, msg.text);
+    socket.broadcast.emit(msg.room, msg);
   });
 });
 
