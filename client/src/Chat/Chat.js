@@ -2,8 +2,10 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import { socket } from "../connection/socket.js";
 import * as actions from "../actions/index.js";
-import Friends from "./Friends.js";
-import "./Chat.css"
+import Users from "./Users.js";
+import Groups from "./Group.js";
+import "./Chat.css";
+import { Link } from "react-router-dom";
 
 class Chat extends Component {
   constructor(props) {
@@ -17,8 +19,9 @@ class Chat extends Component {
     let node = document.createElement("div");
     let textNode = document.createTextNode(text);
     node.appendChild(textNode);
-    node.className = owner
-    node.className += (owner === this.props.user.username) ? " right-justify" : " left-justify"
+    node.className = owner;
+    node.className +=
+      owner === this.props.user.username ? " right-justify" : " left-justify";
     document.getElementById("chatBox").appendChild(node);
   };
 
@@ -54,7 +57,7 @@ class Chat extends Component {
     const msg = {
       owner: this.props.user.username,
       room: this.props.room,
-      text: this.state.myMessage
+      text: this.state.myMessage,
     };
     this.appendChatBox(msg.owner, msg.text);
     socket.emit("messaging", msg);
@@ -75,7 +78,8 @@ class Chat extends Component {
     } else {
       return (
         <div className="Chat">
-          <Friends></Friends>
+          <Users></Users>
+          <Groups></Groups>
           <div id="chatBox"></div>
           <input
             id={"chatInput"}
@@ -84,6 +88,9 @@ class Chat extends Component {
           ></input>
           <button onClick={this.send}>send</button>
           <button onClick={this.destroy}>home</button>
+          <Link to="/group/creation">
+            <button>create group</button>
+          </Link>
         </div>
       );
     }
@@ -93,7 +100,7 @@ class Chat extends Component {
 let mapStateToProps = (state) => {
   return {
     user: state.user,
-    room: state.room
+    room: state.room,
   };
 };
 

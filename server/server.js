@@ -1,8 +1,8 @@
-import express, { text } from "express";
-import { db } from "./connections/mongo.js";
+import express from "express";
 import hserver from "http";
 import { Server } from "socket.io";
 import { getChatHistory, saveChatItem } from "./services/chat.js";
+import { createGroup, addGroupMember } from "./services/group.js";
 const app = express();
 const httpServer = hserver.createServer(app);
 const io = new Server(httpServer, {
@@ -16,10 +16,28 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
   console.log(socket.id);
-  socket.once("init", async (room)=>{
-    const chatHistory = await getChatHistory(room)
-    socket.emit("initReply", chatHistory)
-  })
+  socket.once("init", async (room) => {
+    const chatHistory = await getChatHistory(room);
+    socket.emit("initReply", chatHistory);
+  });
+
+  // group = {
+  //   name,
+  //   memberIds=[]
+  // }
+  socket.once("create_group", async (group, creatorId) => {
+    try {
+      await createGroup(group.name);
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      await addGroupMember(group.memberIds, group.name, creatorId);
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
   // msg = {
   //   owner,
@@ -27,8 +45,12 @@ io.on("connection", (socket) => {
   //   room
   // }
   socket.on("messaging", async (msg) => {
-    await saveChatItem(msg)
-    socket.broadcast.emit(msg.room, msg);
+    try {
+      await saveChatItem(msg);
+      socket.broadcast.emit(msg.room, msg);
+    } catch (error) {
+      console.log(error);
+    }
   });
 });
 

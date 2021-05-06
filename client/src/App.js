@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import * as actions from "./actions/index.js";
 import Entrypoint from "./Entrypoint/Entrypoint";
 import Chat from "./Chat/Chat";
+import GroupCreation from "./Chat/GroupCreation";
 
 class App extends Component {
   render() {
@@ -13,6 +14,7 @@ class App extends Component {
       <BrowserRouter>
         <Switch>
           <Route exact path="/chat" component={Chat}></Route>
+          <Route exact path="/group/creation" component={GroupCreation}></Route>
           <Route path="/entrypoint" component={Entrypoint}></Route>
         </Switch>
       </BrowserRouter>
