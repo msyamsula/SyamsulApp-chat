@@ -1,21 +1,8 @@
-import { group } from "../models/group.js"
-import {createGroupService, addGroupMember, createMongoRoom} from "../services/group.js"
-import {get_payload} from "../utility/jwt.js"
+import {createGroupService, addGroupMember, createMongoRoom, getAllMyGroupService} from "../services/group.js"
 import {output} from "../utility/output.js"
 
 export const createGroup = async (req, res) => {
     // preparation
-    // get token, get payload
-    // create appropriate variable
-    const token = req.body.token
-    let payload
-    try {
-        payload = await get_payload(token)
-    } catch (error) {
-        let resp = output(500, "controller error when getting jwt payload", error)
-        res.status(500).send(resp)
-    }
-
     const groupName = req.body.group_name
     const memberIds = req.body.member_ids
 
@@ -50,6 +37,21 @@ export const createGroup = async (req, res) => {
     } catch (error) {
         console.log(error);
         let resp = output(500, "controller error when creating group", error)
+        res.status(500).send(resp)
+    }
+}
+
+export const getAllMyGroup = async (req, res) => {
+    const userId = req.body.id
+
+    try {
+        let resp = await getAllMyGroupService(userId)
+        if (resp.status != 200){
+            res.status(resp.status).send(resp)
+        }
+        res.send(resp)
+    } catch (error) {
+        let resp = output(500, "controller error when get all my group", error)
         res.status(500).send(resp)
     }
 }
