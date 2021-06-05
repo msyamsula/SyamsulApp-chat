@@ -85,19 +85,37 @@ export const getAllMyGroupService = async (userId) => {
     let resp = await userGroup.findAll(
       whereClause
     )
-    
+
     let myGroups = []
-    resp.forEach(r => {
-      myGroups.push(r["dataValues"]["groupId"])
-    })
+    for(let i=0; i<resp.length; i++){
+      let currentGroupId = resp[i]["dataValues"]["groupId"]
+      let currentGroup = await getGroupById(currentGroupId)
+      myGroups.push(currentGroup.data)
+    }
     
     return output(200, "success", myGroups)
   } catch (error) {
-    return output(500, "service error when find all my group", error)
+    return output(500, "service error when find all my group", error.toString())
+  }
+}
+
+export const getGroupById = async (groupId) => {
+  let whereClause = {
+    where : {
+      id: groupId
+    }
+  }
+  try {
+    let resp = await group.findOne(whereClause)
+    resp = output(200, "success", resp["dataValues"])
+    return resp
+  } catch (error) {
+    let resp = output(500, `error when find group ${groupId}`, error.toString())
+    return resp
   }
 }
 
 // console.log(await createGroup("test"))
 // console.log(await addGroupMember([1,3,4], 1));
 // console.log(await createMongoRoom(1, "test"));
-// console.log(await getAllMyGroup(1));
+// console.log(await getGroupById(1));
