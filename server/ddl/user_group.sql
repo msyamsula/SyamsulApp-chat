@@ -1,8 +1,7 @@
 CREATE table `user_group` (
-	id primary key auto increment
+	id bigint primary key auto_increment,
 	user_id bigint not null ,
 	group_id bigint not null,
-	is_approve boolean not null default false,
 	foreign key (user_id) references `user`(id),
 	foreign key (group_id) references `group`(id)
 );

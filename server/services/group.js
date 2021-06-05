@@ -1,40 +1,30 @@
 import { group } from "../models/group.js";
 import { output } from "../utility/output.js";
 import { userGroup } from "../models/userGroup.js";
+import {db as mongodb} from "../connections/mongo.js"
 
-export const createGroup = async (groupName) => {
-  let whereClause = {
-    where: {
-      name: groupName,
-    },
-  };
+
+export const createGroupService = async (groupName) => {
+  let theGroup
   try {
-    let result = await group.findAll(whereClause);
-    if (result.length == 0) {
-      let theGroup = {
-        name: groupName,
-      };
-      try {
-        await group.create(theGroup);
-      } catch (error) {
-        return output(500, "error when creating group", error);
-      }
-    } else {
-      return output(400, "group name is already used");
+    theGroup = {
+      name: groupName
     }
+    let db_resp = await group.create(theGroup);
+    theGroup = db_resp["dataValues"]
   } catch (error) {
-    return output(500, "error when checking group", error);
+    return output(500, "service error when creating group", error);
   }
 
-  return output(200, "success", groupName);
+  return output(200, "success", theGroup);
 };
 
 // memberIds = []
-export const addGroupMember = async (memberIds, groupName, creatorId) => {
+export const addGroupMember = async (memberIds, groupId) => {
   let theGroup;
   let whereClause = {
     where : {
-      name: groupName
+      id: groupId
     }
   }
   try {
@@ -52,19 +42,39 @@ export const addGroupMember = async (memberIds, groupName, creatorId) => {
   for (let i = 0; i < memberIds.length; i++) {
     let ug = {
       userId: memberIds[i],
-      groupId: theGroup.id,
-      isApprove: parseInt(memberIds[i]) == parseInt(creatorId) ? true : false,
+      groupId: groupId,
     };
     data.push(ug);
     try {
       await userGroup.create(ug);
     } catch (error) {
-      return output(500, "error when creating user_group", error);
+      return output(500, "error when adding user to group", error);
     }
   }
 
   return output(200, "success", data);
 };
 
+export const createMongoRoom = async (groupId, groupName) => {
+  let roomName = `${groupId}-${groupName}`
+  let collection = mongodb.collection(roomName)
+
+  let initData = {
+    "init": "init"
+  }
+  try {
+    // create init data
+    let resp = await collection.insertOne(initData)
+    // delete init data
+    resp = await collection.deleteOne({"init":"init"})
+    resp = output(200, "success", resp)
+    return resp
+  } catch (error) {
+    let resp = output(500, `service error when initialize room ${roomName}`, error)
+    return resp
+  }
+}
+
 // console.log(await createGroup("test"))
-// console.log(await addRoomMember([1,2,3], "test"));
+// console.log(await addGroupMember([1,3,4], 1));
+// console.log(await createMongoRoom(1, "test"));

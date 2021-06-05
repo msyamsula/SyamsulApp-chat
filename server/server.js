@@ -2,8 +2,17 @@ import express from "express";
 import hserver from "http";
 import { Server } from "socket.io";
 import { getChatHistory, saveChatItem } from "./services/chat.js";
-import { createGroup, addGroupMember } from "./services/group.js";
+import {createGroup} from "./controllers/group.js"
+import { authenticateJWT } from "./utility/jwt.js";
+import bodyParser from "body-parser"
 const app = express();
+
+// http api
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
+app.post("/group", authenticateJWT, createGroup)
+
+// socket io
 const httpServer = hserver.createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -19,24 +28,6 @@ io.on("connection", (socket) => {
   socket.once("init", async (room) => {
     const chatHistory = await getChatHistory(room);
     socket.emit("initReply", chatHistory);
-  });
-
-  // group = {
-  //   name,
-  //   memberIds=[]
-  // }
-  socket.once("create_group", async (group, creatorId) => {
-    try {
-      await createGroup(group.name);
-    } catch (error) {
-      console.log(error);
-    }
-
-    try {
-      await addGroupMember(group.memberIds, group.name, creatorId);
-    } catch (error) {
-      console.log(error);
-    }
   });
 
   // msg = {

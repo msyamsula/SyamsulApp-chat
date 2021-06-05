@@ -14,8 +14,7 @@ export const group = mysqlConn.define(
     name: {
       type: DataTypes.STRING,
       field: "name",
-      allowNull: false,
-      unique: true
+      allowNull: false
     },
   },
   { tableName: "group" }

@@ -13,12 +13,6 @@ export const userGroup = mysqlConn.define(
       type: DataTypes.BIGINT,
       field: "group_id",
       allowNull: false
-    },
-    isApprove: {
-      type: DataTypes.BOOLEAN,
-      field: "is_approve",
-      allowNull: false,
-      defaultValue: false
     }
   },
   { tableName: "user_group" }
