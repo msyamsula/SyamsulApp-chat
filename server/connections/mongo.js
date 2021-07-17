@@ -1,13 +1,17 @@
-import MongoClient from "mongodb";
+// import MongoClient from "mongodb";
+const { MongoClient } = require("mongodb");
 
 const mongouri = process.env.MONGO_URI;
 
-let connect = async (dbName) => {
-  let client = await MongoClient(mongouri);
+const connect = async (dbName) => {
+  const client = await MongoClient(mongouri);
   return client.db(dbName);
 };
+// const db = await connect("chat");
 
-export let db = await connect("chat")
+module.exports = {
+  connect,
+};
 
 // console.log(await connect("chat"));
 // MongoClient(mongouri, (error, client) => {

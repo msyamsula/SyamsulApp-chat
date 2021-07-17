@@ -1,11 +1,12 @@
-import { Sequelize } from "sequelize";
+// import { Sequelize } from "sequelize";
+const { Sequelize } = require("sequelize");
 const uri = process.env.MYSQL_URI;
 
-export const mysqlConn = new Sequelize(uri, {
+const mysqlConn = new Sequelize(uri, {
   define: {
     freezeTableName: true,
     timestamps: false,
-    omitNull: true
+    omitNull: true,
   },
   pool: {
     max: 5,
@@ -15,7 +16,12 @@ export const mysqlConn = new Sequelize(uri, {
   },
 });
 
-export const mysqlConnect = async (conn) => {
+const mysqlConnect = async (conn) => {
   // console.log(uri);
   await conn.authenticate();
+};
+
+module.exports = {
+  mysqlConnect,
+  mysqlConn,
 };

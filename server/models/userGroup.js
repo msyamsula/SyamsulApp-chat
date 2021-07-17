@@ -1,19 +1,23 @@
-import { mysqlConn } from "../connections/mysql.js";
-import DataTypes from "sequelize";
+const { mysqlConn } = require("../connections/mysql.js");
+const DataTypes = require("sequelize");
 
-export const userGroup = mysqlConn.define(
+const userGroup = mysqlConn.define(
   "user_group",
   {
     userId: {
       type: DataTypes.BIGINT,
       field: "user_id",
-      allowNull: false
+      allowNull: false,
     },
     groupId: {
       type: DataTypes.BIGINT,
       field: "group_id",
-      allowNull: false
-    }
+      allowNull: false,
+    },
   },
   { tableName: "user_group" }
 );
+
+module.exports = {
+  userGroup,
+};
