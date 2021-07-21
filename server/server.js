@@ -34,6 +34,23 @@ io.on("connection", (socket) => {
     let eventName = `messageFor${msg.receiverId}`;
     socket.broadcast.emit(eventName, msg);
   });
+
+  socket.on("someoneGoesOffline", (user) => {
+    /**
+     * this function handle if someone goes offline
+     * input
+     *  - user: json
+     *  {
+     *    id: int,
+     *    username: str
+     *  }
+     *
+     * output:
+     *  it will broadcast id of person that goes offline
+     */
+    console.log(user.id);
+    socket.broadcast.emit("replySomeoneGoesOffline", user.id);
+  });
 });
 
 httpServer.listen(process.env.PORT, () => {
