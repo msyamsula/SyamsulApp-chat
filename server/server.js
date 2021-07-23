@@ -17,39 +17,62 @@ const socketOptions = {
 };
 const io = new Server(httpServer, socketOptions);
 
-io.on("connection", (socket) => {
-  socket.on("messaging", async (msg) => {
+const Io = io.of("/");
+
+Io.on("connection", (socket) => {
+  console.log(socket.id, "connect to main socket");
+  socket.on("someoneOffline", (id) => {
     /**
-     * this function is for accepting "messaging" event from client
-     * msg is in format
-     * {
-     *    senderId: id,
-     *    receiverId: id,
-     *    text: str
-     * }
-     *
-     * then broadcast it with event name = "messageFor{id}" which will be caught
-     * by other person
+     * this function is for broadcasting when someone is offline
+     * id: int
      */
-    let eventName = `messageFor${msg.receiverId}`;
-    socket.broadcast.emit(eventName, msg);
+    socket.broadcast.emit("someoneOffline", id);
+  });
+  socket.on("someoneOnline", (id) => {
+    /**
+     * this function is for broadcasting when someone is offline
+     * id: int
+     */
+    socket.broadcast.emit("someoneOnline", id);
+  });
+  socket.on("messaging", (msg) => {
+    /**
+     * this function is for broadcasting when someone messaging
+     * msg: json
+     * {
+     *  senderId: int,
+     *  receiverId: int,
+     *  id: int,
+     *  text: string
+     * }
+     */
+    socket.broadcast.emit("messaging", msg);
   });
 
-  socket.on("someoneGoesOffline", (user) => {
+  socket.on("someoneReadMessage", (msg) => {
     /**
-     * this function handle if someone goes offline
-     * input
-     *  - user: json
-     *  {
-     *    id: int,
-     *    username: str
-     *  }
-     *
-     * output:
-     *  it will broadcast id of person that goes offline
+     * broadcast "someoneReadMessage"
+     * msg: json
+     * {
+     *  senderId: int,
+     *  receiverId: int,
+     *  text: int,
+     *  id: int
+     *  isRead: bool
+     * }
      */
-    console.log(user.id);
-    socket.broadcast.emit("replySomeoneGoesOffline", user.id);
+    socket.broadcast.emit("someoneReadMessage", msg);
+  });
+
+  socket.on("someoneBulkReadMessage", (msg) => {
+    socket.broadcast.emit("someoneBulkReadMessage", msg);
+  });
+
+  socket.on("disconnect", () => {
+    /**
+     * notify when disconnet
+     */
+    console.log(socket.id, "disconnect from main socket");
   });
 });
 
